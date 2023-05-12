@@ -11,12 +11,11 @@ const App = () => {
 
   useEffect(() => {
     const fetchDataFromNeo4j = async () => {
-      const nodesDataRes = await fetch(`/api/get-all-nodes`);
-      const relationshipsDataRes = await fetch(`/api/get-all-relationships`);
+      const nodesDataRes = await fetch(`/api/get-nodes`);
+      const relationshipsDataRes = await fetch(`/api/get-relationships`);
 
       const nodesData = await nodesDataRes.json();
       const relationships = await relationshipsDataRes.json();
-
       setNeo4jData({
         nodes: nodesData,
         relationships: relationships,
@@ -32,7 +31,7 @@ const App = () => {
         <h1>Coaching Tree</h1>
         <div className="button-container">
           <button disabled>Upload Data</button>
-          <Link href="/generate-report">
+          <Link href="/reports">
             <button>Generate Report</button>
           </Link>
         </div>

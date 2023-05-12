@@ -9,15 +9,15 @@ import ForceGraph2D, {
   LinkObject,
 } from "react-force-graph-2d";
 import NodeSearchBox from "./NodeSearchBox";
-import getNodeColor from "@/utils/get-node-color";
+import getNodeColor from "@/utils/node-colors";
 import { POSITION_LEVELS, TALENT_GROUPS } from "@/constants/employee-fields";
 import { NODE_SIZE, NODE_COLORS } from "@/constants/node-graph";
 import { Neo4jData, EmployeeNode } from "@/types/neo4j";
 import { NodeProperties, NodeIdMapper, NodeDegrees } from "@/types/graph";
 
-type Neo4jGraphProps = {
+interface Neo4jGraphProps {
   neo4jData: Neo4jData;
-};
+}
 
 const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
   const [graphData, setGraphData] = useState<GraphData>({
@@ -26,7 +26,6 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
   });
   const [nodeDegrees, setNodeDegrees] = useState<NodeDegrees>({});
   const [nodeColorMap, setNodeColorMap] = useState<NodeIdMapper>({});
-  const [externalNodes, setExternalNodes] = useState<NodeIdMapper>({});
   const [nodeProperties, setNodeProperties] = useState<NodeProperties>({});
   const [nodesWithoutLink, setNodesWithoutLink] = useState<Set<string>>(
     new Set<string>()
@@ -165,7 +164,6 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
       });
 
       // Create nodes and links for coaches that are not in the data
-      const externalNodesDict: NodeIdMapper = {}
       nodesWithoutLink.forEach((value) => {
         if (
           (nodeProperties[value].coachName && talentGroupFilter == "All") ||
@@ -178,11 +176,9 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
             source: coachId,
             target: value,
           });
-          externalNodesDict[coachId] = nodeProperties[value].coachName as string
           colorMap[coachId] = NODE_COLORS.outsideCBO;
         }
       });
-      setExternalNodes(externalNodesDict)
       setGraphData({ nodes, links });
       setNodeColorMap(colorMap);
     }
@@ -194,6 +190,7 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
         <div className="flex-container">
           <NodeSearchBox
             nodes={graphData.nodes}
+            properties={nodeProperties}
             searchCallback={searchCallback}
           />
           <div>
@@ -248,7 +245,8 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
             node.fy = node.y;
           }}
           onNodeClick={(node: NodeObject) => {
-            router.push(`/profile/${node.id}`);
+            const employeeId = nodeProperties[node.id as string].employeeId;
+            router.push(`/profile/${employeeId}`);
           }}
           nodeCanvasObject={(node: NodeObject, ctx) => {
             if (node == focusNode) {

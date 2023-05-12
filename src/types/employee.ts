@@ -5,7 +5,17 @@ export type EmployeeProperties = {
   position: string;
   email: string;
   location: string;
+  status: string;
   coachName: string | null;
   coachEmployeeId: string;
-  status: string;
+  coachEmail?: string;
+  coachTG?: string,
+  coachLocation?: string,
+  coachPosition?: string,
+  coachStatus?: string,
+  coacheeName?: string;
+  coacheeId?: string;
+  coacheePosition?: string;
+  coacheeTG?: string;
+  coacheeCount?: number;
 };

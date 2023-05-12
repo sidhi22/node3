@@ -6,18 +6,20 @@ import { EmployeeNode } from "@/types/neo4j";
 const DATA_VARIABLE = "employee";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
   const session: Session = driver.session();
-  const query = `MATCH (e:Employee) WHERE e.employeeId = "${id}" RETURN e as ${DATA_VARIABLE}`;
+  const query = `MATCH (p:Employee) WHERE p.Coach IS NULL 
+    RETURN p as ${DATA_VARIABLE}`;
 
   try {
     const result: QueryResult = await session.run(query);
     const records: Record[] = result.records;
-    const employeeNode: EmployeeNode = records[0].get(DATA_VARIABLE);
-    res.status(200).json(employeeNode);
-  } catch (error) {
-    console.error("Error fetching data from Neo4j:", error);
+    const employees: EmployeeNode[] = records.map((record) =>
+      record.get(DATA_VARIABLE)
+    );
+    res.status(200).json(employees);
+    // return values
   } finally {
+    // 4. Close the session
     await session.close();
   }
 };

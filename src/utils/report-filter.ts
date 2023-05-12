@@ -1,40 +1,42 @@
-function inTalentGroup(dataObj, talentGroup) {
-  if (talentGroup == "All" || dataObj.Talent_Group == talentGroup) {
+import { EmployeeNode } from "@/types/neo4j";
+
+function inTalentGroup(node: EmployeeNode, talentGroup: string) {
+  if (talentGroup == "All" || node.properties.talentGroup == talentGroup) {
     return true;
   }
   return false;
 }
 
-function inLocation(dataObj, location) {
-  if (location == "All" || dataObj.Location_Name == location) {
+function inLocation(node: EmployeeNode, location: string) {
+  if (location == "All" || node.properties.location == location) {
     return true;
   }
   return false;
 }
 
-function filterPartner(dataObj, partnerFilter) {
-  if (!partnerFilter || dataObj.Position_Name != "Partner") {
+function filterPartner(node: EmployeeNode, partnerFilter: boolean) {
+  if (!partnerFilter || node.properties.position != "Partner") {
     return true;
   }
   return false;
 }
 
-export default function reportFilter(
-  data,
-  talentGroupFilter,
-  locationFilter,
-  partnerFilter
-) {
-  var newData = [];
+export default function filterReport(
+  data: EmployeeNode[],
+  talentGroupFilter: string,
+  locationFilter: string,
+  partnerFilter: boolean
+): EmployeeNode[] {
+  const filteredData: EmployeeNode[] = [];
   data.forEach((item) => {
     if (
-      inTalentGroup(item.properties, talentGroupFilter) &&
-      inLocation(item.properties, locationFilter) &&
-      filterPartner(item.properties, partnerFilter)
+      inTalentGroup(item, talentGroupFilter) &&
+      inLocation(item, locationFilter) &&
+      filterPartner(item, partnerFilter)
     ) {
-      newData.push(item);
+      filteredData.push(item);
     }
   });
 
-  return newData;
+  return filteredData;
 }

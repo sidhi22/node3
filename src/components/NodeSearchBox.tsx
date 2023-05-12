@@ -1,30 +1,53 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  ChangeEvent,
+  ChangeEventHandler,
+} from "react";
+import { NodeObject } from "react-force-graph-2d";
+import { NodeProperties } from "@/types/graph";
 
-function NodeSearchBox({ nodes, searchCallback }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showResults, setShowResults] = useState(true);
-  const inputRef = useRef(null);
+interface SearchProps {
+  nodes: NodeObject[];
+  properties: NodeProperties;
+  searchCallback: (node: NodeObject) => void;
+}
 
-  const handleChange = (event) => {
+function NodeSearchBox({ nodes, properties, searchCallback }: SearchProps) {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showResults, setShowResults] = useState<boolean>(true);
+  const [results, setResults] = useState<NodeObject[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     setSearchTerm(event.target.value);
     setShowResults(true);
   };
 
-  const handleResultClick = (node) => {
+  const handleResultClick = (node: NodeObject) => {
     searchCallback(node);
     setShowResults(false);
     if (inputRef.current) {
-      inputRef.current.value = node.Preferred_Full_Name;
+      inputRef.current.value = properties[node.id as string].label;
     }
   };
 
-  const results = searchTerm
-    ? nodes.filter((node) =>
-        node.Preferred_Full_Name.toLowerCase().includes(
-          searchTerm.toLocaleLowerCase()
-        )
-      )
-    : [];
+  useEffect(() => {
+    if (searchTerm) {
+      const resultNodes: NodeObject[] = nodes.filter((node: NodeObject) => {
+        if (properties[node.id as string]) {
+          return properties[node.id as string].label
+            .toLowerCase()
+            .includes(searchTerm.toLocaleLowerCase());
+        }
+      });
+
+      setResults(resultNodes);
+    }
+  }, [searchTerm]);
 
   return (
     <div>
@@ -36,13 +59,13 @@ function NodeSearchBox({ nodes, searchCallback }) {
       />
       {showResults && (
         <ul className="result-list">
-          {results.map((node) => (
+          {results.map((node: NodeObject) => (
             <li
-              key={node.Preferred_Full_Name}
+              key={properties[node.id as string].label}
               onClick={() => handleResultClick(node)}
-              className='result-item'
+              className="result-item"
             >
-              {node.Preferred_Full_Name}
+              {properties[node.id as string].label}
             </li>
           ))}
         </ul>
