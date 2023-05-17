@@ -47,20 +47,20 @@ function ReportTable({ report }: ReportTableProps) {
           >
             <button>Download CSV</button>
           </CSVLink>
-
+          <h1>Showing {employees ? employees.length : 0} results</h1>
           <table>
             <thead>
               <tr>
-                {reportTable.headers.map((header) => (
-                  <th>{header}</th>
+                {reportTable.headers.map((header, index) => (
+                  <th key={index}>{header}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {reportTable.rows.map((row) => (
-                <tr>
-                  {row.map((value) => (
-                    <td>{value}</td>
+              {reportTable.rows.map((row, index) => (
+                <tr key={index}>
+                  {row.map((value, index) => (
+                    <td key={index}>{value}</td>
                   ))}
                 </tr>
               ))}

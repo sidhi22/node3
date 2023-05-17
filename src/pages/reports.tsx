@@ -55,8 +55,10 @@ export default function Reports() {
               value={tgFilter}
               onChange={(event) => setTalentGroupFilter(event.target.value)}
             >
-              {TG_FILTERS.map((filter) => (
-                <option value={filter}>{filter}</option>
+              {TG_FILTERS.map((filter, index) => (
+                <option key={index} value={filter}>
+                  {filter}
+                </option>
               ))}
             </select>
           </div>
@@ -67,8 +69,10 @@ export default function Reports() {
               value={geoFilter}
               onChange={(event) => setGeoFilter(event.target.value)}
             >
-              {GEO_FILTERS.map((filter) => (
-                <option value={filter}>{filter}</option>
+              {GEO_FILTERS.map((filter, index) => (
+                <option key={index} value={filter}>
+                  {filter}
+                </option>
               ))}
             </select>
           </div>

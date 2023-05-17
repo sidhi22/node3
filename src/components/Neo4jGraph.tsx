@@ -200,8 +200,10 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
               value={talentGroupFilter}
               onChange={(event) => setTalentGroupFilter(event.target.value)}
             >
-              {TALENT_GROUPS.map((filterValue) => (
-                <option value={filterValue}>{filterValue}</option>
+              {TALENT_GROUPS.map((filterValue, index) => (
+                <option key={index} value={filterValue}>
+                  {filterValue}
+                </option>
               ))}
             </select>
           </div>

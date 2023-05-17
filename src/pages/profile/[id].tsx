@@ -1,11 +1,12 @@
 import React from 'react'
 
-export const profile = () => {
+const profile = () => {
   return (
     <div>profile</div>
   )
 }
 
+export default profile
 // import { EmployeeNode } from "@/types/neo4j";
 
 // interface StaticProps {
