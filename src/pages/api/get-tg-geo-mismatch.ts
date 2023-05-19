@@ -1,20 +1,18 @@
-import driver from "../../lib/neo4j";
-import { QueryResult, Session, Record } from "neo4j-driver";
+import { Record } from "neo4j-driver";
 import { NextApiRequest, NextApiResponse } from "next";
 import { EmployeeNode } from "@/types/neo4j";
+import { getRecords } from "@/services/db-service";
 
 const EMPLOYEE_VAR = "employee";
 const COACH_VAR = "coach";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const session: Session = driver.session();
   const query = `MATCH (c:Employee)-[:COACHING]->(p:Employee)
-  WHERE p.Location_Name <> c.Location_Name AND p.Talent_Group <> c.Talent_Group
+  WHERE p.location <> c.location AND p.talentGroup <> c.talentGroup
   RETURN p as ${EMPLOYEE_VAR}, c as ${COACH_VAR}`;
 
   try {
-    const result: QueryResult = await session.run(query);
-    const records: Record[] = result.records;
+    const records: Record[] = await getRecords(query);
     const employees: EmployeeNode[] = records.map((record) => {
       const employee: EmployeeNode = record.get(EMPLOYEE_VAR);
       const coach: EmployeeNode = record.get(COACH_VAR);
@@ -28,8 +26,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
     res.status(200).json(employees);
     // return values
-  } finally {
-    // 4. Close the session
-    await session.close();
+  } catch (error) {
+    console.log(error);
   }
 };

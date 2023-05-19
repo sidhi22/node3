@@ -34,9 +34,13 @@ function getCellData(node: EmployeeNode, header: string): string | number {
     case HEADERS.coacheeName:
       return node.properties.coacheeName as string;
     case HEADERS.coacheePosition:
-      return node.properties.coachPosition as string;
+      return node.properties.coacheePosition as string;
     case HEADERS.coachTG:
       return node.properties.coachTG as string;
+    case HEADERS.coacheePosition:
+      return node.properties.coacheePosition as string;
+    case HEADERS.coacheeTG:
+      return node.properties.coacheeTG as string;
     default:
       return "";
   }
@@ -79,7 +83,7 @@ export default function getReportTable(
     case reports.geoMismatch.label:
       return {
         headers: reports.geoMismatch.headers,
-        rows: getRows(filteredReportData, reports.overCoaching.headers),
+        rows: getRows(filteredReportData, reports.geoMismatch.headers),
       };
     case reports.tgMismatch.label:
       return {

@@ -226,13 +226,15 @@ const Neo4jGraph = ({ neo4jData }: Neo4jGraphProps) => {
             return "";
           }}
           linkColor={(link: LinkObject) => {
-            const sourceProperties = nodeProperties[link.source as string];
-            const targetProperties = nodeProperties[link.target as string];
+            const sourceNode: NodeObject = link.source as NodeObject;
+            const targetNode: NodeObject = link.target as NodeObject;
+            const sourceProperties = nodeProperties[sourceNode.id as string];
+            const targetProperties = nodeProperties[targetNode.id as string];
             if (sourceProperties && targetProperties) {
               return Math.abs(
                 POSITION_LEVELS[sourceProperties.position] -
                   POSITION_LEVELS[targetProperties.position]
-              ) > 1
+              ) > 2
                 ? "pink"
                 : "";
             } else {

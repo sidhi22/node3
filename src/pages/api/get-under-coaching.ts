@@ -1,22 +1,20 @@
-import driver from "../../lib/neo4j";
-import { QueryResult, Session, Record } from "neo4j-driver";
+import { Record } from "neo4j-driver";
 import { NextApiRequest, NextApiResponse } from "next";
 import { EmployeeNode } from "@/types/neo4j";
+import { getRecords } from "@/services/db-service";
 import { POSITION_LEVELS } from "@/constants/employee-fields";
 
 const EMPLOYEE_VAR = "employee";
 const COUNT_VAR = "count";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const session: Session = driver.session();
   const query = `MATCH (p:Employee)
     WITH p, size([(p)-[:COACHING]->(c) WHERE c:Employee | 1]) AS count
     WHERE count < 2
     RETURN p as ${EMPLOYEE_VAR}, count as ${COUNT_VAR}`;
 
   try {
-    const result: QueryResult = await session.run(query);
-    const records: Record[] = result.records;
+    const records: Record[] = await getRecords(query);
     const employees: EmployeeNode[] = [];
     records.forEach((record) => {
       const employee: EmployeeNode = record.get(EMPLOYEE_VAR);
@@ -34,8 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             (b.properties.coacheeCount as number)
         )
       );
-  } finally {
-    // 4. Close the session
-    await session.close();
+  } catch (error) {
+    console.log(error);
   }
 };

@@ -1,69 +1,58 @@
-import React from 'react'
+import { EmployeeNode } from "@/types/neo4j";
+import Link from "next/link";
+import { getEmployeeIds, getEmployeeById } from "@/services/db-service";
 
-const profile = () => {
-  return (
-    <div>profile</div>
-  )
+interface StaticProps {
+  params: {
+    id: string;
+  };
 }
 
-export default profile
-// import { EmployeeNode } from "@/types/neo4j";
+interface ProfileProps {
+  employee: EmployeeNode;
+}
 
-// interface StaticProps {
-//   params: {
-//     id: string;
-//   };
-// }
+export default function Profile({ employee }: ProfileProps) {
+  const {
+    name,
+    talentGroup,
+    location,
+    email,
+    position,
+    coachEmployeeId,
+    coachName,
+    status,
+  } = employee.properties;
+  return (
+    <>
+      <Link href="/">
+        <button>Home</button>
+      </Link>
+      <h1>{name}</h1>
+      <h3>Talent Group: {talentGroup}</h3>
+      <h3>Location: {location}</h3>
+      <h3>
+        <Link href={`mailto:${email}`}>Email: {email}</Link>
+      </h3>
+      <h3>Position: {position}</h3>
+      <h3>
+        <Link href={`/profile/${coachEmployeeId}`}>Coach: {coachName}</Link>
+      </h3>
+      <h3>Status: {status}</h3>
+    </>
+  );
+}
 
-// interface ProfileProps {
-//   employee: EmployeeNode;
-// }
+export async function getStaticPaths() {
+  const employeeIds = await getEmployeeIds();
+  const paths = JSON.parse(employeeIds).map((id: string) => ({
+    params: { id },
+  }));
 
-// export default function Profile({ employee }: ProfileProps) {
-//   const {
-//     name,
-//     talentGroup,
-//     location,
-//     email,
-//     position,
-//     coachEmployeeId,
-//     coachName,
-//     status,
-//   } = employee.properties;
-//   return (
-//     <>
-//       <a href="/">
-//         <button>Home</button>
-//       </a>
-//       <h1>{name}</h1>
-//       <h3>Talent Group: {talentGroup}</h3>
-//       <h3>Location: {location}</h3>
-//       <h3>
-//         <a href={`mailto:${email}`}>Email: {email}</a>
-//       </h3>
-//       <h3>Position: {position}</h3>
-//       <h3>
-//         <a href={`/profile/${coachEmployeeId}`}>Coach: {coachName}</a>
-//       </h3>
-//       <h3>Status: {status}</h3>
-//     </>
-//   );
-// }
+  return { paths, fallback: false };
+}
 
-// export async function getStaticPaths() {
-//   const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/get-ids`);
-//   const employeeIds = await res.json();
-//   const paths = employeeIds.map((id: string) => ({
-//     params: { id },
-//   }));
-
-//   return { paths, fallback: false };
-// }
-
-// export async function getStaticProps({ params }: StaticProps) {
-//   const res = await fetch(
-//     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/get-employee-by-id?id=${params.id}`
-//   );
-//   const employee = await res.json();
-//   return { props: { employee } };
-// }
+export async function getStaticProps({ params }: StaticProps) {
+  const employee = await getEmployeeById(params.id);
+  return { props: { employee: JSON.parse(employee) } };
+}
